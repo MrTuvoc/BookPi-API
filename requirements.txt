@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pymongo
+pymongo[srv]
+python-dotenv
+pydantic
+datetime
+os
+bson
+pathlib
+urllib
