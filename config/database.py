@@ -9,7 +9,7 @@ load_dotenv(dotenv_path=dotenv_path)
 
 username = urllib.parse.quote_plus(getenv("DBUSER"))
 password = urllib.parse.quote_plus(getenv("DBPASS"))
-dbname = urllib.parse.quote_plus(getenv("DBNAME"))
-client = MongoClient(f"mongodb+srv://{username}:{password}@cluster0.6ahdmfc.mongodb.net/{dbname}?retryWrites=true&w=majority")
+
+client = MongoClient(f"mongodb+srv://{username}:{password}@cluster0.6ahdmfc.mongodb.net/bookpidb?retryWrites=true&w=majority")
 db = client.bookpidb
-collection_name = db[dbname]
+collection_name = db["bookpicol"]
