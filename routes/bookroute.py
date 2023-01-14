@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 from models.bookmodel import Book
-from schemas.bookschema import books_serialize
+from schemas.bookschema import book_serialize,books_serialize
 from config.database import collection_name
 from pymongo.errors import PyMongoError, ConnectionFailure
 bookapirouter = APIRouter()
@@ -10,7 +10,7 @@ bookapirouter = APIRouter()
 async def status():
     return {"status":"ok"}
 # Retrieve all books
-@bookapirouter.get("/")
+@bookapirouter.get("/all")
 async def getbooks():
     try:
         books = books_serialize(collection_name.find())
