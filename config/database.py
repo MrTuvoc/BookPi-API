@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import urllib.parse
 
-dotenv_path = Path('../.env')
+dotenv_path = Path('/etc/secrets/.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 username = urllib.parse.quote_plus(getenv("DBUSER"))
