@@ -7,4 +7,3 @@ pydantic
 datetime
 bson
 pathlib
-urllib
