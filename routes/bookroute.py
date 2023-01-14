@@ -6,6 +6,9 @@ from config.database import collection_name
 from pymongo.errors import PyMongoError, ConnectionFailure
 bookapirouter = APIRouter()
 
+@bookapirouter.get("/status")
+async def status():
+    return {"status":"ok"}
 # Retrieve all books
 @bookapirouter.get("/")
 async def getbooks():
