@@ -38,7 +38,7 @@ async def book_by_name(name:str):
         raise HTTPException(status_code=404, detail="Book not found")
 
 # Add a new book
-@bookapirouter.post("/add/")
+@bookapirouter.post("/add")
 async def add_book(book: Book):
     try:
         _id = collection_name.insert_one(dict(book))
@@ -47,7 +47,7 @@ async def add_book(book: Book):
         raise HTTPException(status_code=500, detail="An error occurred while trying to create the book")
 
 # Update an existing book
-@bookapirouter.put("/{id}")
+@bookapirouter.put("/update/{id}")
 async def update_book(id: str, book: Book):
     try:
         collection_name.find_one_and_update({"_id": ObjectId(id)}, {
@@ -58,7 +58,7 @@ async def update_book(id: str, book: Book):
         raise HTTPException(status_code=404, detail="Book not found")
 
 # Delete a book
-@bookapirouter.delete("/{id}")
+@bookapirouter.delete("/delete/{id}")
 async def delete_book(id:str):
     try:
         collection_name.find_one_and_delete({"_id": ObjectId(id)})
