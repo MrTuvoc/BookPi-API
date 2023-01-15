@@ -8,19 +8,20 @@ from pymongo.errors import PyMongoError, ConnectionFailure
 
 bookapirouter = APIRouter()
 
+
+# Redirection to documentation page
+@bookapirouter.get("/")
+async def redirect_to_docs():
+    return RedirectResponse(url='/docs')
+
 # API Status check
 @bookapirouter.get("/status")
 async def status():
     return {"status":"ok"}
 
-# Redirection to documentation page
-@bookapirouter.get("/")
-async def doc():
-    return RedirectResponse(url='/docs')
-
 # Retrieve all books
 @bookapirouter.get("/all")
-async def getbooks():
+async def show_books():
     try:
         books = books_serialize(collection_name.find())
         return {"data":books}
@@ -28,17 +29,17 @@ async def getbooks():
         raise HTTPException(status_code=500, detail="An error occurred while trying to retrieve the books")
 
 # Retrieve a specific book by name
-@bookapirouter.get("/{name}")
-async def getbook(name:str):
+@bookapirouter.get("/book/{name}")
+async def book_by_name(name:str):
     try:
         book = books_serialize(collection_name.find_one({"name":name}))
         return {"data":book}
     except (PyMongoError, ConnectionFailure):
         raise HTTPException(status_code=404, detail="Book not found")
 
-# Create a new book
-@bookapirouter.post("/")
-async def create_book(book: Book):
+# Add a new book
+@bookapirouter.post("/add/")
+async def add_book(book: Book):
     try:
         _id = collection_name.insert_one(dict(book))
         return {"data": books_serialize(collection_name.find({"_id": _id.inserted_id})), "status_code": 201}
