@@ -9,6 +9,6 @@ load_dotenv(dotenv_path=dotenv_path)
 username = environ.get("DBUSER")
 password = environ.get("DBPASS")
 
-client = MongoClient(f"mongodb+srv://{username}:{password}@cluster0.6ahdmfc.mongodb.net/?retryWrites=true&w=majority")
-db = client["bookpidb"]
-collection_name = db["bookpicol"]
+client = MongoClient(f"mongodb+srv://{username}:{password}@cluster0.4di2bdx.mongodb.net/?retryWrites=true&w=majority")
+db = client["BookPiDB"]
+collection_name = db["BookPiCL"]

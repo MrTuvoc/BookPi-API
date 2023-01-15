@@ -8,14 +8,13 @@ from pymongo.errors import PyMongoError, ConnectionFailure
 
 bookapirouter = APIRouter()
 
-
 # Redirection to documentation page
-@bookapirouter.get("/")
+@bookapirouter.get("/",docs_url=None)
 async def redirect_to_docs():
     return RedirectResponse(url='/docs')
 
 # API Status check
-@bookapirouter.get("/status")
+@bookapirouter.get("/status",docs_url=None)
 async def status():
     return {"status":"ok"}
 
