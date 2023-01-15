@@ -1,14 +1,23 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import RedirectResponse
 from bson import ObjectId
 from models.bookmodel import Book
 from schemas.bookschema import book_serialize,books_serialize
 from config.database import collection_name
 from pymongo.errors import PyMongoError, ConnectionFailure
+
 bookapirouter = APIRouter()
 
+# API Status check
 @bookapirouter.get("/status")
 async def status():
     return {"status":"ok"}
+
+# Redirection to documentation page
+@bookapirouter.get("/")
+async def doc():
+    return RedirectResponse(url='/docs')
+
 # Retrieve all books
 @bookapirouter.get("/all")
 async def getbooks():
