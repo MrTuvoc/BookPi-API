@@ -31,24 +31,32 @@ async def show_books():
 @bookapirouter.get("/book/{name}")
 async def book_by_name(name:str):
     try:
-        book = books_serialize(collection_name.find_one({"name":name}))
-        return {"data":book}
+        book = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
+        if book:
+            return {"data":books_serialize(book)}
+        else:
+            raise HTTPException(status_code=404, detail="Book not found")
     except (PyMongoError, ConnectionFailure):
         raise HTTPException(status_code=404, detail="Book not found")
 
 # Add a new book
 @bookapirouter.post("/add")
 async def add_book(book: Book):
+    if all(val is None for val in book.__dict__.values()):
+        raise HTTPException(status_code=400, detail="All fields can't be null")
     try:
         _id = collection_name.insert_one(dict(book))
         return {"data": books_serialize(collection_name.find({"_id": _id.inserted_id})), "status_code": 201}
     except (PyMongoError, ConnectionFailure):
         raise HTTPException(status_code=500, detail="An error occurred while trying to create the book")
 
-# Update an existing book
+# Update a book
 @bookapirouter.put("/update/{id}")
 async def update_book(id: str, book: Book):
     try:
+        book_in_db = collection_name.find_one({"_id": ObjectId(id)})
+        if not book_in_db:
+            raise HTTPException(status_code=404, detail="Book not found")
         collection_name.find_one_and_update({"_id": ObjectId(id)}, {
             "$set": dict(book)
         })
@@ -60,6 +68,9 @@ async def update_book(id: str, book: Book):
 @bookapirouter.delete("/delete/{id}")
 async def delete_book(id:str):
     try:
+        book_in_db = collection_name.find_one({"_id": ObjectId(id)})
+        if not book_in_db:
+            raise HTTPException(status_code=404, detail="Book not found")
         collection_name.find_one_and_delete({"_id": ObjectId(id)})
         return {"status": "ok", "status_code": 204}
     except (PyMongoError, ConnectionFailure):
