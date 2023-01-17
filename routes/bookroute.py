@@ -19,7 +19,7 @@ async def status():
     return {"status":"ok"}
 
 # Retrieve all books
-@bookapirouter.get("/all")
+@bookapirouter.get("api/v1/books")
 async def show_books():
     try:
         books = books_serialize(collection_name.find())
@@ -28,19 +28,19 @@ async def show_books():
         raise HTTPException(status_code=500, detail="An error occurred while trying to retrieve the books")
 
 # Retrieve a specific book by name
-@bookapirouter.get("/book/{name}")
-async def book_by_name(name:str):
+@bookapirouter.get("api/v1/search/{name}")
+async def book_by_name(name: str):
     try:
-        book = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
-        if book:
-            return {"data":books_serialize(book)}
+        book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
+        if book_in_db:
+            return {"data":books_serialize(book_in_db)}
         else:
             raise HTTPException(status_code=404, detail="Book not found")
     except (PyMongoError, ConnectionFailure):
         raise HTTPException(status_code=404, detail="Book not found")
 
 # Add a new book
-@bookapirouter.post("/add")
+@bookapirouter.post("/api/v1/add")
 async def add_book(book: Book):
     if all(val is None for val in book.__dict__.values()):
         raise HTTPException(status_code=400, detail="All fields can't be null")
@@ -51,22 +51,22 @@ async def add_book(book: Book):
         raise HTTPException(status_code=500, detail="An error occurred while trying to create the book")
 
 # Update a book
-@bookapirouter.put("/update/{id}")
-async def update_book(id: str, book: Book):
+@bookapirouter.put("/api1/v1/update/{name}")
+async def update_book(name: str, book: Book):
     try:
-        book_in_db = collection_name.find_one({"_id": ObjectId(id)})
+        book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
         if not book_in_db:
             raise HTTPException(status_code=404, detail="Book not found")
-        collection_name.find_one_and_update({"_id": ObjectId(id)}, {
+        collection_name.find_one_and_update({"name": {"$regex": name, "$options": "i"}}, {
             "$set": dict(book)
         })
-        return {"data": books_serialize(collection_name.find({"_id": ObjectId(id)})), "status_code": 200}
+        return {"data": books_serialize(collection_name.find_one({"name": {"$regex": name, "$options": "i"}})), "status_code": 200}
     except (PyMongoError, ConnectionFailure):
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=500, detail="Error while connecting to the database")
 
 # Delete a book
-@bookapirouter.delete("/delete/{id}")
-async def delete_book(id:str):
+@bookapirouter.delete("/api/v1/delete/{id}")
+async def delete_book(id: str):
     try:
         book_in_db = collection_name.find_one({"_id": ObjectId(id)})
         if not book_in_db:
