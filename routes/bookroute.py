@@ -51,7 +51,7 @@ async def add_book(book: Book):
         raise HTTPException(status_code=500, detail="An error occurred while trying to create the book")
 
 # Update a book
-@bookapirouter.put("/api1/v1/update/{name}")
+@bookapirouter.put("/api/v1/update/{name}")
 async def update_book(name: str, book: Book):
     try:
         book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
