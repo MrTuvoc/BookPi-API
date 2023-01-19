@@ -19,7 +19,7 @@ async def status():
     return {"status":"ok"}
 
 # Retrieve all books
-@bookapirouter.get("api/v1/books")
+@bookapirouter.get("/v1/books")
 async def show_books():
     try:
         books = books_serialize(collection_name.find())
@@ -28,7 +28,7 @@ async def show_books():
         raise HTTPException(status_code=500, detail="An error occurred while trying to retrieve the books")
 
 # Retrieve a specific book by name
-@bookapirouter.get("api/v1/search/{name}")
+@bookapirouter.get("/v1/search/{name}")
 async def book_by_name(name: str):
     try:
         book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
@@ -40,7 +40,7 @@ async def book_by_name(name: str):
         raise HTTPException(status_code=404, detail="Book not found")
 
 # Add a new book
-@bookapirouter.post("/api/v1/add")
+@bookapirouter.post("/v1/add")
 async def add_book(book: Book):
     if all(val is None for val in book.__dict__.values()):
         raise HTTPException(status_code=400, detail="All fields can't be null")
@@ -51,7 +51,7 @@ async def add_book(book: Book):
         raise HTTPException(status_code=500, detail="An error occurred while trying to create the book")
 
 # Update a book
-@bookapirouter.put("/api/v1/update/{name}")
+@bookapirouter.put("/v1/update/{name}")
 async def update_book(name: str, book: Book):
     try:
         book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
@@ -65,7 +65,7 @@ async def update_book(name: str, book: Book):
         raise HTTPException(status_code=500, detail="Error while connecting to the database")
 
 # Delete a book
-@bookapirouter.delete("/api/v1/delete/{id}")
+@bookapirouter.delete("/v1/delete/{id}")
 async def delete_book(id: str):
     try:
         book_in_db = collection_name.find_one({"_id": ObjectId(id)})
