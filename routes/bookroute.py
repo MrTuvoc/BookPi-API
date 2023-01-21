@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 from bson import ObjectId
 from models.bookmodel import Book
-from schemas.bookschema import books_serialize
+from schemas.bookschema import books_serialize,book_serialize
 from config.database import collection_name
 from pymongo.errors import PyMongoError, ConnectionFailure
 
@@ -28,16 +28,16 @@ async def show_books():
         raise HTTPException(status_code=500, detail="An error occurred while trying to retrieve the books")
 
 # Retrieve a specific book by name
-@bookapirouter.get("/v1/search/{name}")
+@app.get("/v1/search/{name}")
 async def book_by_name(name: str):
     try:
-        book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
+        book_in_db = collection.find_one({"name": {"$regex": name, "$options": "i"}})
         if book_in_db:
-            return {"data":books_serialize(book_in_db)}
+            return {"data": book_serialize(book_in_db)}
         else:
             raise HTTPException(status_code=404, detail="Book not found")
-    except (PyMongoError, ConnectionFailure):
-        raise HTTPException(status_code=404, detail="Book not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Add a new book
 @bookapirouter.post("/v1/add")
@@ -60,7 +60,7 @@ async def update_book(name: str, book: Book):
         collection_name.find_one_and_update({"name": {"$regex": name, "$options": "i"}}, {
             "$set": dict(book)
         })
-        return {"data": books_serialize(collection_name.find_one({"name": {"$regex": name, "$options": "i"}})), "status_code": 200}
+        return {"data": book_serialize(collection_name.find_one({"name": {"$regex": name, "$options": "i"}})), "status_code": 200}
     except (PyMongoError, ConnectionFailure):
         raise HTTPException(status_code=500, detail="Error while connecting to the database")
 
