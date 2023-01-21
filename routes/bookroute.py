@@ -31,7 +31,7 @@ async def show_books():
 @bookapirouter.get("/v1/search/{name}")
 async def book_by_name(name: str):
     try:
-        book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
+        book_in_db = collection_name.find({"name": {"$regex": name, "$options": "i"}})
         if book_in_db:
             return {"data": books_serialize(book_in_db)}
         else:
