@@ -36,9 +36,8 @@ async def book_by_name(name: str):
             return {"data": books_serialize(book_in_db)}
         else:
             raise HTTPException(status_code=404, detail="Book not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
+    except (PyMongoError, ConnectionFailure):
+        raise HTTPException(status_code=500, detail="An error occurred while trying to search for the book")
 # Add a new book
 @bookapirouter.post("/books/add")
 async def add_book(book: Book):
