@@ -28,12 +28,12 @@ async def show_books():
         raise HTTPException(status_code=500, detail="An error occurred while trying to retrieve the books")
 
 # Retrieve a specific book by name
-@app.get("/v1/search/{name}")
+@bookapirouter.get("/v1/search/{name}")
 async def book_by_name(name: str):
     try:
-        book_in_db = collection.find_one({"name": {"$regex": name, "$options": "i"}})
+        book_in_db = collection_name.find_one({"name": {"$regex": name, "$options": "i"}})
         if book_in_db:
-            return {"data": book_serialize(book_in_db)}
+            return {"data": books_serialize(book_in_db)}
         else:
             raise HTTPException(status_code=404, detail="Book not found")
     except Exception as e:
